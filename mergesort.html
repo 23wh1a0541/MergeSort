@@ -1,0 +1,1667 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Merge Sort Visualizer</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-purple: #8A2BE2;
+            --secondary-purple: #9B59B6;
+            --accent-purple: #E6E6FA;
+            --dark-purple: #6A0DAD;
+            --white: #FFFFFF;
+            --light-gray: #F8F9FA;
+            --medium-gray: #E9ECEF;
+            --dark-gray: #6C757D;
+            --dark: #212529;
+            --shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            --radius: 12px;
+            --transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #f9f0ff 0%, #fff 100%);
+            color: var(--dark);
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 25px;
+        }
+
+        /* HEADER */
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 30px;
+            background: linear-gradient(135deg, var(--primary-purple) 0%, var(--secondary-purple) 100%);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            position: relative;
+            overflow: hidden;
+        }
+
+        header::before {
+            content: "";
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.2) 1%, transparent 1%);
+            background-size: 30px 30px;
+            opacity: 0.6;
+            z-index: 0;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .logo-icon {
+            width: 70px;
+            height: 70px;
+            background: var(--white);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            color: var(--primary-purple);
+            box-shadow: 0 10px 20px rgba(138, 43, 226, 0.3);
+            border: 4px solid var(--white);
+        }
+
+        h1 {
+            font-size: 3rem;
+            font-weight: 800;
+            background: linear-gradient(90deg, #212529, #8A2BE2);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .tagline {
+            color: var(--white);
+            font-size: 1.2rem;
+            max-width: 800px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+            font-weight: 500;
+            background: rgba(106, 13, 173, 0.8);
+            padding: 15px 25px;
+            border-radius: 50px;
+            display: inline-block;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        /* MAIN LAYOUT */
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        @media (max-width: 1100px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* LEFT PANEL - CONTROLS & INFO */
+        .left-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+        }
+
+        /* CONTROLS PANEL */
+        .controls-panel {
+            background: var(--white);
+            border-radius: var(--radius);
+            padding: 30px;
+            border: 1px solid var(--medium-gray);
+            box-shadow: var(--shadow);
+        }
+
+        .panel-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 25px;
+            color: var(--dark);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding-bottom: 15px;
+            border-bottom: 3px solid var(--primary-purple);
+        }
+
+        .panel-title i {
+            color: var(--primary-purple);
+            background: rgba(138, 43, 226, 0.1);
+            padding: 10px;
+            border-radius: 10px;
+        }
+
+        /* CONTROL GROUPS */
+        .control-group {
+            margin-bottom: 25px;
+        }
+
+        .control-label {
+            margin-bottom: 12px;
+            color: var(--dark);
+            font-weight: 600;
+            font-size: 1.05rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .control-label i {
+            color: var(--primary-purple);
+        }
+
+        input, select, textarea {
+            padding: 15px;
+            border-radius: 10px;
+            border: 2px solid var(--medium-gray);
+            background: var(--white);
+            color: var(--dark);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1rem;
+            transition: var(--transition);
+            width: 100%;
+            resize: vertical;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: var(--primary-purple);
+            box-shadow: 0 0 0 4px rgba(138, 43, 226, 0.2);
+        }
+
+        .range-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .range-value {
+            min-width: 50px;
+            text-align: center;
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 600;
+            background: var(--primary-purple);
+            color: var(--white);
+            padding: 8px 15px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(138, 43, 226, 0.3);
+        }
+
+        .array-input-container {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .array-input-container input {
+            flex: 1;
+        }
+
+        .array-input-container button {
+            padding: 0 20px;
+            background: var(--primary-purple);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: var(--transition);
+        }
+
+        .array-input-container button:hover {
+            background: var(--dark-purple);
+            transform: translateY(-2px);
+        }
+
+        /* BUTTONS */
+        .buttons-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .buttons-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        .btn {
+            padding: 18px;
+            border-radius: 12px;
+            border: none;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 700;
+            font-size: 1.05rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transition: 0.5s;
+        }
+
+        .btn:hover::before {
+            left: 100%;
+        }
+
+        .btn:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-purple), var(--dark-purple));
+            color: white;
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #28a745, #20c997);
+            color: white;
+        }
+
+        .btn-warning {
+            background: linear-gradient(135deg, #ffc107, #ff9800);
+            color: var(--dark);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #dc3545, #c82333);
+            color: white;
+        }
+
+        .btn-info {
+            background: linear-gradient(135deg, #17a2b8, #138496);
+            color: white;
+        }
+
+        .btn-ghost {
+            background: rgba(138, 43, 226, 0.1);
+            color: var(--dark-purple);
+            border: 2px solid var(--primary-purple);
+        }
+
+        /* ALGORITHM INFO PANEL */
+        .info-panel {
+            background: var(--white);
+            border-radius: var(--radius);
+            padding: 30px;
+            border: 1px solid var(--medium-gray);
+            box-shadow: var(--shadow);
+        }
+
+        .complexity-cards {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .complexity-card {
+            background: var(--light-gray);
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            border: 2px solid transparent;
+            transition: var(--transition);
+        }
+
+        .complexity-card:hover {
+            border-color: var(--primary-purple);
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(138, 43, 226, 0.1);
+        }
+
+        .complexity-title {
+            font-size: 0.9rem;
+            color: var(--dark-gray);
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        .complexity-value {
+            font-size: 1.5rem;
+            font-weight: 800;
+            font-family: 'JetBrains Mono', monospace;
+            color: var(--dark);
+        }
+
+        .algorithm-steps {
+            margin-top: 25px;
+        }
+
+        .step-list {
+            list-style-type: none;
+            counter-reset: step-counter;
+        }
+
+        .step-list li {
+            counter-increment: step-counter;
+            margin-bottom: 15px;
+            padding-left: 40px;
+            position: relative;
+            line-height: 1.8;
+        }
+
+        .step-list li::before {
+            content: counter(step-counter);
+            position: absolute;
+            left: 0;
+            top: 0;
+            background: var(--primary-purple);
+            color: white;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.9rem;
+            box-shadow: 0 4px 8px rgba(138, 43, 226, 0.3);
+        }
+
+        /* RIGHT PANEL - VISUALIZATION */
+        .right-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+        }
+
+        /* VISUALIZATION PANEL */
+        .visualization-panel {
+            background: var(--white);
+            border-radius: var(--radius);
+            padding: 30px;
+            border: 1px solid var(--medium-gray);
+            box-shadow: var(--shadow);
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .visualization-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .current-status {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            background: var(--light-gray);
+            padding: 15px 25px;
+            border-radius: 10px;
+            border-left: 5px solid var(--primary-purple);
+        }
+
+        .status-indicator {
+            width: 15px;
+            height: 15px;
+            border-radius: 50%;
+            background: var(--dark-gray);
+            animation: pulse 1.5s infinite;
+        }
+
+        .status-indicator.active {
+            background: var(--primary-purple);
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        /* TRADITIONAL ARRAY DISPLAY */
+        .traditional-array {
+            background: var(--white);
+            border-radius: var(--radius);
+            padding: 30px;
+            border: 1px solid var(--medium-gray);
+            box-shadow: var(--shadow);
+            flex-grow: 1;
+        }
+
+        .array-display {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            padding: 40px 20px;
+            background: var(--light-gray);
+            border-radius: 10px;
+            min-height: 300px;
+            position: relative;
+            margin-top: 15px;
+        }
+
+        .array-element-box {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            transition: var(--transition);
+            position: relative;
+        }
+
+        .box-index {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9rem;
+            color: var(--dark-gray);
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        .box-value {
+            width: 80px;
+            height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 700;
+            font-size: 1.5rem;
+            border-radius: 12px;
+            background: linear-gradient(135deg, var(--primary-purple), var(--secondary-purple));
+            color: white;
+            border: 3px solid var(--medium-gray);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            transition: var(--transition);
+        }
+
+        /* Merge Sort specific states */
+        .array-element-box.dividing .box-value {
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            border-color: #3498db;
+            animation: pulse 0.8s ease infinite;
+        }
+
+        .array-element-box.merging .box-value {
+            background: linear-gradient(135deg, #2ecc71, #27ae60);
+            border-color: #2ecc71;
+            animation: pulse 0.8s ease infinite;
+        }
+
+        .array-element-box.comparing .box-value {
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+            border-color: #e74c3c;
+            animation: pulse 0.8s ease infinite;
+            transform: scale(1.1);
+        }
+
+        .array-element-box.sorted .box-value {
+            background: linear-gradient(135deg, #28a745, #34ce57);
+            border-color: #28a745;
+        }
+
+        .array-element-box.left-part .box-value {
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            border-color: #3498db;
+            border-style: dashed;
+        }
+
+        .array-element-box.right-part .box-value {
+            background: linear-gradient(135deg, #9b59b6, #8e44ad);
+            border-color: #9b59b6;
+            border-style: dashed;
+        }
+
+        @keyframes merge {
+            0% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0); }
+        }
+
+        /* STEP CONTROLS */
+        .step-controls {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 25px;
+            padding-top: 25px;
+            border-top: 2px solid var(--light-gray);
+        }
+
+        .step-btn {
+            padding: 12px 25px;
+            background: linear-gradient(135deg, var(--primary-purple), var(--dark-purple));
+            border: none;
+            border-radius: 8px;
+            color: white;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: var(--transition);
+        }
+
+        .step-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(138, 43, 226, 0.3);
+        }
+
+        .step-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        /* CURRENT OPERATION */
+        .current-operation {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            background: linear-gradient(135deg, rgba(138, 43, 226, 0.1), rgba(155, 89, 182, 0.1));
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 25px;
+            border: 2px dashed var(--primary-purple);
+            text-align: center;
+        }
+
+        .operation-title {
+            font-weight: 700;
+            color: var(--dark-purple);
+            font-size: 1.1rem;
+        }
+
+        .operation-details {
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 600;
+            font-size: 1.2rem;
+            color: var(--dark);
+        }
+
+        /* COMPARISON VISUAL */
+        .comparison-visual {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 15px;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 10px;
+            border: 2px solid var(--primary-purple);
+        }
+
+        .comparison-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .comparison-value {
+            width: 60px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 700;
+            font-size: 1.3rem;
+            border-radius: 8px;
+            background: linear-gradient(135deg, var(--primary-purple), var(--secondary-purple));
+            color: white;
+            border: 2px solid var(--medium-gray);
+        }
+
+        .comparison-operator {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--dark-purple);
+            margin: 0 10px;
+        }
+
+        .merge-indicator {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--primary-purple);
+            font-weight: 600;
+            margin-top: 10px;
+            animation: pulse 1s infinite;
+        }
+
+        /* SUB-ARRAY VISUALIZATION */
+        .sub-array-container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            margin-top: 20px;
+            padding: 15px;
+            background: rgba(138, 43, 226, 0.05);
+            border-radius: 10px;
+            border: 1px solid var(--accent-purple);
+        }
+
+        .sub-array {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            padding: 15px;
+            background: white;
+            border-radius: 8px;
+            border: 2px solid var(--accent-purple);
+        }
+
+        .sub-array-title {
+            font-weight: 600;
+            color: var(--dark-purple);
+            margin-bottom: 10px;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .sub-array-element {
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 700;
+            border-radius: 8px;
+            background: var(--accent-purple);
+            color: var(--dark-purple);
+            border: 2px solid var(--primary-purple);
+        }
+
+        /* LEGEND */
+        .legend {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            margin-top: 25px;
+            justify-content: center;
+            padding-top: 25px;
+            border-top: 2px solid var(--light-gray);
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 4px;
+        }
+
+        .dividing-color { background: linear-gradient(135deg, #3498db, #2980b9); }
+        .comparing-color { background: linear-gradient(135deg, #e74c3c, #c0392b); }
+        .merging-color { background: linear-gradient(135deg, #2ecc71, #27ae60); }
+        .sorted-color { background: linear-gradient(135deg, #28a745, #34ce57); }
+        .normal-color { background: linear-gradient(135deg, var(--primary-purple), var(--secondary-purple)); }
+        .left-part-color { background: linear-gradient(135deg, #3498db, #2980b9); }
+        .right-part-color { background: linear-gradient(135deg, #9b59b6, #8e44ad); }
+
+        /* DETAILS PANEL */
+        .details-panel {
+            background: var(--white);
+            border-radius: var(--radius);
+            padding: 30px;
+            border: 1px solid var(--medium-gray);
+            box-shadow: var(--shadow);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        .stat-card {
+            background: var(--light-gray);
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            border: 2px solid transparent;
+            transition: var(--transition);
+        }
+
+        .stat-card:hover {
+            border-color: var(--primary-purple);
+            transform: translateY(-3px);
+        }
+
+        .stat-value {
+            font-size: 2.2rem;
+            font-weight: 800;
+            margin-bottom: 8px;
+            font-family: 'JetBrains Mono', monospace;
+            color: var(--dark);
+        }
+
+        .stat-label {
+            color: var(--dark-gray);
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        /* EXPLANATION PANEL */
+        .explanation-panel {
+            background: var(--white);
+            border-radius: var(--radius);
+            padding: 25px;
+            border: 1px solid var(--medium-gray);
+            box-shadow: var(--shadow);
+            margin-top: 30px;
+            border-left: 5px solid var(--primary-purple);
+        }
+
+        .explanation-content {
+            display: flex;
+            align-items: flex-start;
+            gap: 20px;
+        }
+
+        .explanation-icon {
+            font-size: 2rem;
+            color: var(--primary-purple);
+            background: rgba(138, 43, 226, 0.1);
+            padding: 15px;
+            border-radius: 12px;
+            flex-shrink: 0;
+        }
+
+        #explanation-text {
+            font-size: 1.05rem;
+            line-height: 1.8;
+            color: var(--dark);
+        }
+
+        /* RECURSION VISUALIZATION */
+        .recursion-tree {
+            margin-top: 20px;
+            padding: 15px;
+            background: rgba(138, 43, 226, 0.05);
+            border-radius: 10px;
+            border: 1px solid var(--accent-purple);
+        }
+
+        .tree-node {
+            display: inline-block;
+            padding: 10px 15px;
+            margin: 5px;
+            background: var(--accent-purple);
+            border-radius: 8px;
+            border: 2px solid var(--primary-purple);
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 600;
+            color: var(--dark-purple);
+        }
+
+        .tree-node.active {
+            background: var(--primary-purple);
+            color: white;
+            animation: pulse 1s infinite;
+        }
+
+        /* FOOTER */
+        footer {
+            text-align: center;
+            margin-top: 40px;
+            padding-top: 25px;
+            color: var(--dark-gray);
+            font-size: 0.95rem;
+            border-top: 1px solid var(--medium-gray);
+        }
+
+        /* RESPONSIVE */
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+            
+            h1 {
+                font-size: 2.2rem;
+            }
+            
+            .buttons-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .complexity-cards {
+                grid-template-columns: 1fr;
+            }
+            
+            .box-value {
+                width: 60px;
+                height: 60px;
+                font-size: 1.2rem;
+            }
+            
+            .comparison-value {
+                width: 50px;
+                height: 50px;
+                font-size: 1.1rem;
+            }
+            
+            .legend {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- HEADER -->
+        <header>
+            <div class="logo">
+                <div class="logo-icon">
+                    <i class="fas fa-merge"></i>
+                </div>
+                <h1>Merge Sort Visualizer</h1>
+            </div>
+            <p class="tagline">Step-by-step visualization of the merge sort algorithm using divide and conquer approach</p>
+        </header>
+
+        <!-- MAIN CONTENT -->
+        <div class="main-content">
+            <!-- LEFT PANEL -->
+            <div class="left-panel">
+                <!-- CONTROLS -->
+                <div class="controls-panel">
+                    <div class="panel-title">
+                        <i class="fas fa-sliders-h"></i>
+                        Algorithm Controls
+                    </div>
+
+                    <div class="control-group">
+                        <div class="control-label">
+                            <i class="fas fa-chart-bar"></i>
+                            Array Input
+                        </div>
+                        <div class="array-input-container">
+                            <input type="text" id="array-input" placeholder="Enter numbers (e.g., 38, 27, 43, 3, 9, 82, 10)" value="38, 27, 43, 3, 9, 82, 10">
+                            <button onclick="useCustomArray()">Use Array</button>
+                        </div>
+                        <p style="font-size: 0.9rem; color: var(--dark-gray); margin-top: 8px;">
+                            Enter comma-separated numbers (max 15)
+                        </p>
+                    </div>
+
+                    <div class="buttons-grid">
+                        <button class="btn btn-primary" onclick="generateRandomArray()">
+                            <i class="fas fa-random"></i> Random Array
+                        </button>
+                        <button class="btn btn-success" onclick="startMergeSort()" id="start-btn">
+                            <i class="fas fa-play"></i> Start Sort
+                        </button>
+                        <button class="btn btn-warning" onclick="pauseResumeSort()" id="pause-btn" disabled>
+                            <i class="fas fa-pause"></i> Pause
+                        </button>
+                        <button class="btn btn-danger" onclick="resetVisualization()">
+                            <i class="fas fa-redo"></i> Reset
+                        </button>
+                    </div>
+                </div>
+
+                <!-- ALGORITHM INFO -->
+                <div class="info-panel">
+                    <div class="panel-title">
+                        <i class="fas fa-info-circle"></i>
+                        Merge Sort Algorithm
+                    </div>
+                    
+                    <div class="complexity-cards">
+                        <div class="complexity-card">
+                            <div class="complexity-title">Time Complexity (Best)</div>
+                            <div class="complexity-value">O(n log n)</div>
+                        </div>
+                        <div class="complexity-card">
+                            <div class="complexity-title">Time Complexity (Average)</div>
+                            <div class="complexity-value">O(n log n)</div>
+                        </div>
+                        <div class="complexity-card">
+                            <div class="complexity-title">Time Complexity (Worst)</div>
+                            <div class="complexity-value">O(n log n)</div>
+                        </div>
+                    </div>
+
+                    <div class="algorithm-steps">
+                        <div class="control-label" style="margin-top: 25px; margin-bottom: 15px;">
+                            <i class="fas fa-list-ol"></i>
+                            How Merge Sort Works
+                        </div>
+                        <ol class="step-list">
+                            <li>Divide the unsorted array into n subarrays, each containing 1 element</li>
+                            <li>Repeatedly merge subarrays to produce new sorted subarrays</li>
+                            <li>Continue until there is only 1 sorted array remaining</li>
+                            <li>Merge operation compares elements from two sorted arrays</li>
+                            <li>Take the smaller element and place it in the result array</li>
+                            <li>Continue until all elements are merged into one sorted array</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+
+            <!-- RIGHT PANEL -->
+            <div class="right-panel">
+                <!-- VISUALIZATION -->
+                <div class="visualization-panel">
+                    <div class="visualization-header">
+                        <div class="panel-title">
+                            <i class="fas fa-eye"></i>
+                            Array Visualization
+                        </div>
+                        <div class="current-status">
+                            <div class="status-indicator" id="status-indicator"></div>
+                            <span id="current-status-text">Ready to sort</span>
+                        </div>
+                    </div>
+
+                    <!-- Traditional Array Visualization -->
+                    <div class="traditional-array">
+                        <div id="traditional-array-container" class="array-display">
+                            <!-- Traditional array boxes will be generated here -->
+                        </div>
+                        
+                        <!-- Recursion Tree Visualization -->
+                        <div id="recursion-tree" class="recursion-tree" style="display: none;">
+                            <div class="sub-array-title">Recursion Tree:</div>
+                            <div id="tree-container"></div>
+                        </div>
+                        
+                        <!-- Sub-arrays Visualization -->
+                        <div id="sub-arrays-container" class="sub-array-container" style="display: none;">
+                            <div class="sub-array-title">Current Sub-arrays:</div>
+                            <div id="left-array" class="sub-array">
+                                <!-- Left sub-array will be generated here -->
+                            </div>
+                            <div id="right-array" class="sub-array">
+                                <!-- Right sub-array will be generated here -->
+                            </div>
+                        </div>
+                        
+                        <!-- Step Controls -->
+                        <div class="step-controls">
+                            <button class="step-btn" onclick="performStep()" id="step-btn">
+                                <i class="fas fa-step-forward"></i> Next Step
+                            </button>
+                        </div>
+                        
+                        <!-- Current Operation -->
+                        <div class="current-operation">
+                            <div class="operation-title">Current Operation:</div>
+                            <div id="operation-details" class="operation-details">Ready to sort</div>
+                            
+                            <!-- Comparison Visual -->
+                            <div id="comparison-visual" class="comparison-visual" style="display: none;">
+                                <div class="comparison-item">
+                                    <div class="box-index">Left[<span id="comp-index1">0</span>]</div>
+                                    <div id="comp-value1" class="comparison-value">0</div>
+                                </div>
+                                <div class="comparison-operator">≤</div>
+                                <div class="comparison-item">
+                                    <div class="box-index">Right[<span id="comp-index2">0</span>]</div>
+                                    <div id="comp-value2" class="comparison-value">0</div>
+                                </div>
+                            </div>
+                            
+                            <!-- Merge Indicator -->
+                            <div id="merge-indicator" class="merge-indicator" style="display: none;">
+                                <i class="fas fa-merge"></i>
+                                <span>Merging elements...</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- LEGEND -->
+                    <div class="legend">
+                        <div class="legend-item">
+                            <div class="legend-color normal-color"></div>
+                            <span>Normal Element</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color dividing-color"></div>
+                            <span>Dividing</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color comparing-color"></div>
+                            <span>Comparing</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color merging-color"></div>
+                            <span>Merging</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color sorted-color"></div>
+                            <span>Sorted</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- DETAILS PANEL -->
+                <div class="details-panel">
+                    <div class="panel-title">
+                        <i class="fas fa-chart-line"></i>
+                        Sorting Statistics
+                    </div>
+                    
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-value" id="comparisons-count">0</div>
+                            <div class="stat-label">Comparisons</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value" id="merges-count">0</div>
+                            <div class="stat-label">Merges</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value" id="divisions-count">0</div>
+                            <div class="stat-label">Divisions</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value" id="time-complexity">O(n log n)</div>
+                            <div class="stat-label">Time Complexity</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- EXPLANATION PANEL -->
+        <div class="explanation-panel">
+            <div class="explanation-content">
+                <div class="explanation-icon">
+                    <i class="fas fa-lightbulb"></i>
+                </div>
+                <div id="explanation-text">
+                    Welcome to the Merge Sort Visualizer! Enter your own array or generate a random one. Merge sort uses the divide and conquer approach: it divides the array into halves, recursively sorts them, and then merges the sorted halves. Click "Start Sort" for automatic sorting or use "Next Step" for manual control.
+                </div>
+            </div>
+        </div>
+
+        <!-- FOOTER -->
+        <footer>
+            <p>Merge Sort Visualizer | Step-by-step visualization of the divide and conquer merge sort algorithm</p>
+            <p style="margin-top: 10px; font-size: 0.85rem;">Use Next Step to manually progress through each division and merge operation</p>
+        </footer>
+    </div>
+
+    <script>
+        // Merge Sort State
+        let array = [38, 27, 43, 3, 9, 82, 10];
+        let originalArray = [...array];
+        let isSorting = false;
+        let isPaused = true; // Start in paused mode for step-by-step
+        let sortingInterval = null;
+        
+        // Statistics
+        let comparisons = 0;
+        let merges = 0;
+        let divisions = 0;
+        
+        // Algorithm State
+        let stack = []; // Stack for recursion simulation
+        let currentStep = null;
+        let waitingForMerge = false;
+        let leftArray = [];
+        let rightArray = [];
+        let mergeResult = [];
+        let leftIndex = 0;
+        let rightIndex = 0;
+        let mergeIndex = 0;
+        let currentRange = null;
+
+        // DOM Elements
+        const traditionalArrayContainer = document.getElementById('traditional-array-container');
+        const arrayInput = document.getElementById('array-input');
+        const startBtn = document.getElementById('start-btn');
+        const pauseBtn = document.getElementById('pause-btn');
+        const stepBtn = document.getElementById('step-btn');
+        const statusIndicator = document.getElementById('status-indicator');
+        const statusText = document.getElementById('current-status-text');
+        const comparisonsCount = document.getElementById('comparisons-count');
+        const mergesCount = document.getElementById('merges-count');
+        const divisionsCount = document.getElementById('divisions-count');
+        const explanationText = document.getElementById('explanation-text');
+        const operationDetails = document.getElementById('operation-details');
+        const comparisonVisual = document.getElementById('comparison-visual');
+        const mergeIndicator = document.getElementById('merge-indicator');
+        const compIndex1 = document.getElementById('comp-index1');
+        const compIndex2 = document.getElementById('comp-index2');
+        const compValue1 = document.getElementById('comp-value1');
+        const compValue2 = document.getElementById('comp-value2');
+        const subArraysContainer = document.getElementById('sub-arrays-container');
+        const leftArrayContainer = document.getElementById('left-array');
+        const rightArrayContainer = document.getElementById('right-array');
+        const recursionTree = document.getElementById('recursion-tree');
+        const treeContainer = document.getElementById('tree-container');
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            renderTraditionalArray();
+            
+            // Enter key for array input
+            arrayInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    useCustomArray();
+                }
+            });
+        });
+
+        // Use custom array from input
+        function useCustomArray() {
+            const input = arrayInput.value.trim();
+            if (!input) return;
+            
+            try {
+                // Parse comma-separated numbers
+                const numbers = input.split(',')
+                    .map(num => parseInt(num.trim()))
+                    .filter(num => !isNaN(num))
+                    .slice(0, 15); // Limit to 15 elements
+                
+                if (numbers.length < 2) {
+                    alert('Please enter at least 2 numbers');
+                    return;
+                }
+                
+                array = numbers;
+                originalArray = [...array];
+                resetVisualization();
+                updateExplanation(`Using custom array with ${array.length} elements. Click "Start Sort" to begin or use "Next Step" to proceed manually.`);
+            } catch (error) {
+                alert('Invalid input. Please enter comma-separated numbers (e.g., 38, 27, 43, 3, 9, 82, 10)');
+            }
+        }
+
+        // Generate random array
+        function generateRandomArray() {
+            const size = Math.floor(Math.random() * 8) + 4; // 4-11 elements
+            array = [];
+            
+            for (let i = 0; i < size; i++) {
+                array.push(Math.floor(Math.random() * 100) + 1);
+            }
+            
+            originalArray = [...array];
+            
+            // Update input field
+            arrayInput.value = array.join(', ');
+            
+            resetVisualization();
+            updateExplanation(`Generated random array with ${array.length} elements. Click "Start Sort" to begin or use "Next Step" to proceed manually.`);
+        }
+
+        // Render traditional array as boxes
+        function renderTraditionalArray() {
+            traditionalArrayContainer.innerHTML = '';
+            
+            array.forEach((value, index) => {
+                const element = document.createElement('div');
+                element.className = 'array-element-box';
+                element.id = `array-box-${index}`;
+                element.dataset.index = index;
+                element.dataset.value = value;
+                
+                element.innerHTML = `
+                    <div class="box-index">[${index}]</div>
+                    <div class="box-value">${value}</div>
+                `;
+                
+                traditionalArrayContainer.appendChild(element);
+            });
+        }
+
+        // Update element state
+        function updateElementState(index, state) {
+            const arrayBox = document.getElementById(`array-box-${index}`);
+            
+            if (arrayBox) {
+                arrayBox.classList.remove('dividing', 'comparing', 'merging', 'sorted', 'left-part', 'right-part');
+                if (state) arrayBox.classList.add(state);
+            }
+        }
+
+        // Render sub-arrays
+        function renderSubArrays(leftArr, rightArr) {
+            leftArrayContainer.innerHTML = '';
+            rightArrayContainer.innerHTML = '';
+            
+            leftArr.forEach((value, index) => {
+                const element = document.createElement('div');
+                element.className = 'sub-array-element';
+                element.textContent = value;
+                leftArrayContainer.appendChild(element);
+            });
+            
+            rightArr.forEach((value, index) => {
+                const element = document.createElement('div');
+                element.className = 'sub-array-element';
+                element.textContent = value;
+                rightArrayContainer.appendChild(element);
+            });
+            
+            subArraysContainer.style.display = 'flex';
+        }
+
+        // Update recursion tree
+        function updateRecursionTree(range, operation) {
+            treeContainer.innerHTML = '';
+            
+            if (range) {
+                const [start, end] = range;
+                const node = document.createElement('div');
+                node.className = `tree-node ${operation === 'active' ? 'active' : ''}`;
+                node.textContent = `[${start}:${end}]`;
+                treeContainer.appendChild(node);
+            }
+            
+            recursionTree.style.display = 'block';
+        }
+
+        // Start merge sort
+        function startMergeSort() {
+            if (isSorting) return;
+            
+            isSorting = true;
+            isPaused = false;
+            
+            // Reset algorithm state
+            stack = [{ type: 'sort', start: 0, end: array.length - 1 }];
+            currentStep = null;
+            waitingForMerge = false;
+            leftArray = [];
+            rightArray = [];
+            mergeResult = [];
+            leftIndex = 0;
+            rightIndex = 0;
+            mergeIndex = 0;
+            currentRange = null;
+            
+            comparisons = 0;
+            merges = 0;
+            divisions = 0;
+            
+            // Update UI
+            startBtn.disabled = true;
+            pauseBtn.disabled = false;
+            stepBtn.disabled = true;
+            pauseBtn.innerHTML = '<i class="fas fa-pause"></i> Pause';
+            statusIndicator.classList.add('active');
+            statusText.textContent = 'Sorting in progress...';
+            operationDetails.textContent = 'Starting merge sort...';
+            comparisonVisual.style.display = 'none';
+            mergeIndicator.style.display = 'none';
+            subArraysContainer.style.display = 'none';
+            
+            updateStats();
+            updateExplanation('Starting automatic merge sort. The algorithm will divide the array and then merge sorted subarrays.');
+            
+            // Start auto-stepping
+            startAutoStep();
+        }
+
+        // Start automatic stepping
+        function startAutoStep() {
+            if (sortingInterval) clearInterval(sortingInterval);
+            
+            sortingInterval = setInterval(() => {
+                performMergeSortStep();
+            }, 1500);
+        }
+
+        // Perform a single step of merge sort
+        function performMergeSortStep() {
+            if (stack.length === 0 && !waitingForMerge) {
+                finishSorting();
+                return;
+            }
+            
+            if (waitingForMerge) {
+                performMergeStep();
+                return;
+            }
+            
+            // Get next step from stack
+            currentStep = stack.pop();
+            
+            if (currentStep.type === 'sort') {
+                const { start, end } = currentStep;
+                
+                if (start >= end) {
+                    // Base case: single element is already sorted
+                    for (let i = start; i <= end; i++) {
+                        updateElementState(i, 'sorted');
+                    }
+                    updateExplanation(`Single element at position ${start} is already sorted.`);
+                    operationDetails.textContent = `Base case: [${start}:${end}] is sorted`;
+                    updateRecursionTree([start, end], 'sorted');
+                    return;
+                }
+                
+                // Calculate mid point
+                const mid = Math.floor((start + end) / 2);
+                currentRange = [start, end];
+                divisions++;
+                
+                // Highlight current division
+                for (let i = start; i <= end; i++) {
+                    updateElementState(i, 'dividing');
+                }
+                
+                updateExplanation(`Dividing array from position ${start} to ${end}. Mid point is ${mid}.`);
+                operationDetails.textContent = `Dividing [${start}:${end}] at mid=${mid}`;
+                updateRecursionTree([start, end], 'active');
+                
+                // Push merge step first (will be executed after sorting both halves)
+                stack.push({ type: 'merge', start, mid, end });
+                // Push right half sort
+                stack.push({ type: 'sort', start: mid + 1, end });
+                // Push left half sort
+                stack.push({ type: 'sort', start, end: mid });
+                
+            } else if (currentStep.type === 'merge') {
+                const { start, mid, end } = currentStep;
+                
+                // Prepare for merging
+                leftArray = array.slice(start, mid + 1);
+                rightArray = array.slice(mid + 1, end + 1);
+                mergeResult = [];
+                leftIndex = 0;
+                rightIndex = 0;
+                waitingForMerge = true;
+                
+                // Highlight left and right parts
+                for (let i = start; i <= mid; i++) {
+                    updateElementState(i, 'left-part');
+                }
+                for (let i = mid + 1; i <= end; i++) {
+                    updateElementState(i, 'right-part');
+                }
+                
+                renderSubArrays(leftArray, rightArray);
+                updateExplanation(`Ready to merge sorted subarrays from ${start} to ${end}.`);
+                operationDetails.textContent = `Merging [${start}:${mid}] and [${mid+1}:${end}]`;
+                updateRecursionTree([start, end], 'merging');
+            }
+            
+            updateStats();
+        }
+
+        // Perform a merge step
+        function performMergeStep() {
+            if (leftIndex < leftArray.length && rightIndex < rightArray.length) {
+                // Compare elements from left and right arrays
+                comparisons++;
+                
+                // Show comparison visual
+                comparisonVisual.style.display = 'flex';
+                compIndex1.textContent = leftIndex;
+                compIndex2.textContent = rightIndex;
+                compValue1.textContent = leftArray[leftIndex];
+                compValue2.textContent = rightArray[rightIndex];
+                
+                if (leftArray[leftIndex] <= rightArray[rightIndex]) {
+                    updateExplanation(`Comparing ${leftArray[leftIndex]} ≤ ${rightArray[rightIndex]}, taking ${leftArray[leftIndex]} from left array.`);
+                    operationDetails.textContent = `Left[${leftIndex}] ≤ Right[${rightIndex}]`;
+                    mergeResult.push(leftArray[leftIndex]);
+                    leftIndex++;
+                } else {
+                    updateExplanation(`Comparing ${leftArray[leftIndex]} > ${rightArray[rightIndex]}, taking ${rightArray[rightIndex]} from right array.`);
+                    operationDetails.textContent = `Left[${leftIndex}] > Right[${rightIndex}]`;
+                    mergeResult.push(rightArray[rightIndex]);
+                    rightIndex++;
+                }
+                
+                mergeIndicator.style.display = 'flex';
+                
+            } else if (leftIndex < leftArray.length) {
+                // Copy remaining elements from left array
+                mergeResult.push(leftArray[leftIndex]);
+                updateExplanation(`Taking remaining element ${leftArray[leftIndex]} from left array.`);
+                operationDetails.textContent = `Copying from left array`;
+                leftIndex++;
+                
+            } else if (rightIndex < rightArray.length) {
+                // Copy remaining elements from right array
+                mergeResult.push(rightArray[rightIndex]);
+                updateExplanation(`Taking remaining element ${rightArray[rightIndex]} from right array.`);
+                operationDetails.textContent = `Copying from right array`;
+                rightIndex++;
+                
+            } else {
+                // Merge complete
+                const { start, end } = currentStep;
+                
+                // Copy merged result back to original array
+                for (let i = 0; i < mergeResult.length; i++) {
+                    array[start + i] = mergeResult[i];
+                }
+                
+                merges++;
+                
+                // Re-render array
+                renderTraditionalArray();
+                
+                // Mark as sorted
+                for (let i = start; i <= end; i++) {
+                    updateElementState(i, 'sorted');
+                }
+                
+                waitingForMerge = false;
+                leftArray = [];
+                rightArray = [];
+                mergeResult = [];
+                comparisonVisual.style.display = 'none';
+                mergeIndicator.style.display = 'none';
+                subArraysContainer.style.display = 'none';
+                
+                updateExplanation(`Merge completed for positions ${start} to ${end}.`);
+                operationDetails.textContent = `Merge completed for [${start}:${end}]`;
+                updateRecursionTree([start, end], 'sorted');
+            }
+            
+            updateStats();
+        }
+
+        // Finish sorting
+        function finishSorting() {
+            clearInterval(sortingInterval);
+            
+            // Mark all elements as sorted
+            for (let k = 0; k < array.length; k++) {
+                updateElementState(k, 'sorted');
+            }
+            
+            isSorting = false;
+            isPaused = false;
+            
+            // Update UI
+            startBtn.disabled = false;
+            pauseBtn.disabled = true;
+            stepBtn.disabled = true;
+            pauseBtn.innerHTML = '<i class="fas fa-pause"></i> Pause';
+            statusIndicator.classList.remove('active');
+            statusText.textContent = 'Sorting completed!';
+            operationDetails.textContent = 'Sorting completed!';
+            comparisonVisual.style.display = 'none';
+            mergeIndicator.style.display = 'none';
+            subArraysContainer.style.display = 'none';
+            recursionTree.style.display = 'none';
+            
+            updateExplanation(`Merge sort completed with ${comparisons} comparisons, ${divisions} divisions, and ${merges} merges. The array is now sorted!`);
+        }
+
+        // Pause/resume sorting
+        function pauseResumeSort() {
+            if (!isSorting) return;
+            
+            if (isPaused) {
+                // Resume sorting
+                isPaused = false;
+                pauseBtn.innerHTML = '<i class="fas fa-pause"></i> Pause';
+                stepBtn.disabled = true;
+                statusText.textContent = 'Sorting in progress...';
+                operationDetails.textContent = 'Resuming...';
+                startAutoStep();
+            } else {
+                // Pause sorting
+                isPaused = true;
+                clearInterval(sortingInterval);
+                pauseBtn.innerHTML = '<i class="fas fa-play"></i> Resume';
+                stepBtn.disabled = false;
+                statusText.textContent = 'Paused - Use Next Step';
+                operationDetails.textContent = 'Paused';
+                updateExplanation('Sorting paused. Use "Next Step" to proceed step by step or "Resume" to continue automatically.');
+            }
+        }
+
+        // Perform next step (manual step-by-step)
+        function performStep() {
+            if (!isSorting) {
+                // Start sorting in step-by-step mode
+                startMergeSort();
+                isPaused = true;
+                clearInterval(sortingInterval);
+                pauseBtn.innerHTML = '<i class="fas fa-play"></i> Resume';
+                stepBtn.disabled = false;
+                statusText.textContent = 'Step-by-step mode';
+                operationDetails.textContent = 'Ready for next step';
+                updateExplanation('Starting step-by-step mode. Click "Next Step" to proceed through each division and merge operation.');
+                return;
+            }
+            
+            if (!isPaused) return;
+            
+            performMergeSortStep();
+        }
+
+        // Reset visualization
+        function resetVisualization() {
+            clearInterval(sortingInterval);
+            
+            isSorting = false;
+            isPaused = true;
+            waitingForMerge = false;
+            
+            // Reset algorithm state
+            stack = [];
+            currentStep = null;
+            leftArray = [];
+            rightArray = [];
+            mergeResult = [];
+            leftIndex = 0;
+            rightIndex = 0;
+            mergeIndex = 0;
+            currentRange = null;
+            
+            comparisons = 0;
+            merges = 0;
+            divisions = 0;
+            
+            // Restore original array
+            array = [...originalArray];
+            
+            // Update UI
+            startBtn.disabled = false;
+            pauseBtn.disabled = true;
+            stepBtn.disabled = false;
+            pauseBtn.innerHTML = '<i class="fas fa-pause"></i> Pause';
+            statusIndicator.classList.remove('active');
+            statusText.textContent = 'Ready to sort';
+            operationDetails.textContent = 'Ready to sort';
+            comparisonVisual.style.display = 'none';
+            mergeIndicator.style.display = 'none';
+            subArraysContainer.style.display = 'none';
+            recursionTree.style.display = 'none';
+            
+            // Reset all elements to normal state
+            for (let k = 0; k < array.length; k++) {
+                updateElementState(k, '');
+            }
+            
+            // Re-render array
+            renderTraditionalArray();
+            
+            updateStats();
+            updateExplanation('Visualization reset. Enter your own array or generate a random one. Use "Next Step" for manual control.');
+        }
+
+        // Update statistics
+        function updateStats() {
+            comparisonsCount.textContent = comparisons;
+            mergesCount.textContent = merges;
+            divisionsCount.textContent = divisions;
+        }
+
+        // Update explanation
+        function updateExplanation(text) {
+            explanationText.textContent = text;
+        }
+    </script>
+</body>
+</html>
